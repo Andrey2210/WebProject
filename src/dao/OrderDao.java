@@ -165,5 +165,4 @@ public class OrderDao extends GenericDao<Order> {
             e.printStackTrace();
         }
     }
-   // select * from orders where checkout_date < "2017-01-15 00:00:00";
 }
