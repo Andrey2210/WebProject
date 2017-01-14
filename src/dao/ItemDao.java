@@ -7,7 +7,9 @@ import dao.sqlBuilder.SqlBuilder;
 import dao.sqlBuilder.UpdateBuilder;
 import entity.Entity;
 import entity.Item;
+import sun.text.normalizer.UTF16;
 
+import java.io.UnsupportedEncodingException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -29,11 +31,13 @@ public class ItemDao extends GenericDao<Item> {
         try {
             while (resultSet != null && resultSet.next()) {
                 String description = new String(resultSet.getBlob("description").getBytes(1l,
-                        (int)  resultSet.getBlob("description").length()));
+                        (int) resultSet.getBlob("description").length()), "UTF-8");
                 resultList.add(new Item(resultSet.getInt("id"), resultSet.getString("name"),
                         description, resultSet.getDouble("price"), resultSet.getInt("remaining_product")));
             }
         } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
         return resultList;

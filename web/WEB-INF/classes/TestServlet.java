@@ -1,8 +1,13 @@
 
 import dao.CustomerDao;
 import dao.GenericDao;
+import dao.ItemDao;
+import dao.OrderDao;
 import entity.Customer;
+import entity.Item;
+import entity.Order;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -20,13 +25,14 @@ public class TestServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        resp.setContentType("text/html");
+        resp.setContentType("text/html; charset=UTF-8");
+        resp.setCharacterEncoding("UTF-8");
 
-            CustomerDao customerDao = new CustomerDao();
-            List<Customer> result = customerDao.getAll();
-            PrintWriter printWriter = resp.getWriter();
-            for(Customer customer : result) {
-                printWriter.write("<h1>" + customer.toString() + "</h1>");
-            }
+        ItemDao itemDao = new ItemDao();
+        List<Item> itemList = itemDao.getAll();
+        req.setAttribute("list", itemList);
+
+        getServletContext().getRequestDispatcher("/index.jsp").forward(req, resp);
+
     }
 }

@@ -21,6 +21,11 @@ public class DbConnection {
 
     public static Connection getConnection() {
         try {
+            Class.forName("com.mysql.jdbc.Driver");
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        try {
             Formatter formatter = new Formatter();
             return DriverManager.getConnection(formatter.format(URL, DB_NAME).toString(), USERNAME, PASSWORD);
         } catch (SQLException e) {
