@@ -9,13 +9,15 @@ public class Item implements Entity {
     private String description;
     private double price;
     private int remainingAmount;
+    private String image;
 
-    public Item(int id, String name, String description, double price, int remainingAmount) {
+    public Item(int id, String name, String description, double price, int remainingAmount, String image) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.price = price;
         this.remainingAmount = remainingAmount;
+        this.image = image;
     }
 
     public Item(String name, String description, double price, int remainingAmount) {
@@ -66,6 +68,14 @@ public class Item implements Entity {
 
     public void setRemainingAmount(int remainingAmount) {
         this.remainingAmount = remainingAmount;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 
     @Override

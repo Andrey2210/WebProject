@@ -33,7 +33,8 @@ public class ItemDao extends GenericDao<Item> {
                 String description = new String(resultSet.getBlob("description").getBytes(1l,
                         (int) resultSet.getBlob("description").length()), "UTF-8");
                 resultList.add(new Item(resultSet.getInt("id"), resultSet.getString("name"),
-                        description, resultSet.getDouble("price"), resultSet.getInt("remaining_product")));
+                        description, resultSet.getDouble("price"), resultSet.getInt("remaining_product"),
+                         resultSet.getString("image") != null ? resultSet.getString("image") : null));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -52,7 +53,8 @@ public class ItemDao extends GenericDao<Item> {
                 String description = new String(resultSet.getBlob("description").getBytes(1l,
                         (int)  resultSet.getBlob("description").length()));
                 result = new Item(resultSet.getInt("id"), resultSet.getString("name"),
-                        description, resultSet.getDouble("price"), resultSet.getInt("remaining_product"));
+                        description, resultSet.getDouble("price"), resultSet.getInt("remaining_product"),
+                        resultSet.getString("image") != null ? resultSet.getString("image") : null);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -67,9 +69,9 @@ public class ItemDao extends GenericDao<Item> {
         try {
             statement = connection.createStatement();
             SqlBuilder sqlBuilder = new InsertBuilder().insertInto("products",
-                    "name, description, price, remaining_product")
+                    "name, description, price, remaining_product, image")
                     .values("\"" + item.getName() + "\", \"" + item.getDescription() + "\", " + item.getPrice()
-                            + ", " + item.getRemainingAmount());
+                            + ", " + item.getRemainingAmount() + ", " + item.getImage());
             statement.executeUpdate(sqlBuilder.build());
         } catch (SQLException e) {
             e.printStackTrace();

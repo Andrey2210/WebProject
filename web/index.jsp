@@ -125,7 +125,7 @@
               <div class="thumbnail">
                 <div class="row">
                   <div class="col-md-3">
-                    <img src="http://placehold.it/260x320" alt="">
+                    <img src="${item.image}" class="img-responsive" alt="">
                   </div>
                   <div class="col-md-9">
                     <div class="caption">
