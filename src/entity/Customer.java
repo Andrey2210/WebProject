@@ -13,6 +13,7 @@ public class Customer implements Entity {
     private String password;
     private String phoneNumber;
     private String addres;
+    private String role;
     private List<Order> orderList;
 
     public Customer(int id, String firstName, String lastName, String email,
@@ -34,6 +35,18 @@ public class Customer implements Entity {
         this.password = password;
         this.phoneNumber = phoneNumber;
         this.addres = addres;
+    }
+
+    public Customer(int id, String firstName, String lastName, String email,
+                    String password, String phoneNumber, String addres, String role) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.password = password;
+        this.phoneNumber = phoneNumber;
+        this.addres = addres;
+        this.role = role;
     }
 
     @Override
@@ -92,6 +105,14 @@ public class Customer implements Entity {
 
     public void setAddres(String addres) {
         this.addres = addres;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 
     public List<Order> getOrderList() {

@@ -20,6 +20,14 @@ public class Item implements Entity {
         this.image = image;
     }
 
+    public Item(String name, String description, double price, int remainingAmount, String image) {
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.remainingAmount = remainingAmount;
+        this.image = image;
+    }
+
     public Item(String name, String description, double price, int remainingAmount) {
         this.name = name;
         this.description = description;
@@ -27,6 +35,27 @@ public class Item implements Entity {
         this.remainingAmount = remainingAmount;
     }
 
+    @Override
+    public int hashCode() {
+        int result = 17;
+        result = 31 * result + name.hashCode();
+        result = 31 * result + description.hashCode();
+        result = 31 * result + id;
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj == null) {
+            return  false;
+        }
+        if(!(obj instanceof  Item)) {
+            return false;
+        }
+        Item otherItem = (Item) obj;
+        return name.equals(otherItem.getName())
+                && description.equals(otherItem.getDescription()) && id == otherItem.getId();
+    }
 
     @Override
     public String toString() {

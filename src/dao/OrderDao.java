@@ -5,11 +5,14 @@ import dao.sqlBuilder.*;
 import entity.Customer;
 import entity.Item;
 import entity.Order;
+import entity.OrderStatus;
 
+import java.io.UnsupportedEncodingException;
 import java.sql.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Formatter;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -24,15 +27,33 @@ public class OrderDao extends GenericDao<Order> {
     @Override
     public List<Order> getAll() {
         List<Order> resultList = new LinkedList<>();
-        ResultSet resultSet = getAllResults(TABLE_NAME);
+        Connection connection = DbConnection.getConnection();
         try {
-            while (resultSet.next()) {
-                resultList.add(new Order(resultSet.getInt("id"), resultSet.getInt("customer_id"),
+            Statement statement = connection.createStatement();
+            String query = "SELECT orders.id, orders.customer_id, orders.checkout_date, " +
+                    "orders.closed_date, orders.order_status, shopping_bag.product_id, products.name, products.description, " +
+                    "products.price, products.remaining_product, products.image, shopping_bag.amount " +
+                    "FROM shopping_bag JOIN orders ON shopping_bag.order_id=orders.id " +
+                    "JOIN products ON shopping_bag.product_id=products.id;";
+            ResultSet resultSet = statement.executeQuery(query);
+            while (resultSet != null && resultSet.next()) {
+                Order order = new Order(resultSet.getInt("id"), resultSet.getInt("customer_id"),
                         resultSet.getTimestamp("checkout_date").toLocalDateTime(),
                         resultSet.getObject("closed_date") != null ? resultSet.getTimestamp("closed_date").toLocalDateTime() : null,
-                        resultSet.getString("order_status")));
+                        OrderStatus.valueOf(resultSet.getString("order_status")));
+                String description = new String(resultSet.getBlob("description").getBytes(1l,
+                        (int) resultSet.getBlob("description").length()), "UTF-8");
+                Item item = new Item(resultSet.getInt("product_id"), resultSet.getString("name"),
+                        description, resultSet.getDouble("price"), resultSet.getInt("remaining_product"),
+                        resultSet.getString("image") != null ? resultSet.getString("image") : null);
+                if (resultList.contains(order)) {
+                    resultList.get(resultList.indexOf(order)).getItems().put(item, resultSet.getInt("amount"));
+                } else {
+                    order.getItems().put(item, resultSet.getInt("amount"));
+                    resultList.add(order);
+                }
             }
-        } catch (SQLException e) {
+        } catch (SQLException | UnsupportedEncodingException e) {
             e.printStackTrace();
         }
         return resultList;
@@ -41,15 +62,30 @@ public class OrderDao extends GenericDao<Order> {
     @Override
     public Order getById(int id) {
         Order result = null;
-        ResultSet resultSet = getResultsById(TABLE_NAME, id);
+        Connection connection = DbConnection.getConnection();
         try {
+            Statement statement = connection.createStatement();
+            String query = "SELECT orders.id, orders.customer_id, orders.checkout_date, " +
+                    "orders.closed_date, orders.order_status, shopping_bag.product_id, products.name, products.description, " +
+                    "products.price, products.remaining_product, products.image, shopping_bag.amount " +
+                    "FROM shopping_bag JOIN orders ON shopping_bag.order_id=orders.id " +
+                    "JOIN products ON shopping_bag.product_id=products.id WHERE orders.id=" + id + ";";
+            ResultSet resultSet = statement.executeQuery(query);
             if (resultSet != null && resultSet.next()) {
                 result = new Order(resultSet.getInt("id"), resultSet.getInt("customer_id"),
                         resultSet.getTimestamp("checkout_date").toLocalDateTime(),
                         resultSet.getObject("closed_date") != null ? resultSet.getTimestamp("closed_date").toLocalDateTime() : null,
-                        resultSet.getString("order_status"));
+                        OrderStatus.valueOf(resultSet.getString("order_status")));
             }
-        } catch (SQLException e) {
+            do {
+                String description = new String(resultSet.getBlob("description").getBytes(1l,
+                        (int) resultSet.getBlob("description").length()), "UTF-8");
+                Item item = new Item(resultSet.getInt("product_id"), resultSet.getString("name"),
+                        description, resultSet.getDouble("price"), resultSet.getInt("remaining_product"),
+                        resultSet.getString("image") != null ? resultSet.getString("image") : null);
+                result.getItems().put(item, resultSet.getInt("amount"));
+            } while (resultSet.next());
+        } catch (SQLException | UnsupportedEncodingException e) {
             e.printStackTrace();
         }
         return result;
@@ -60,14 +96,26 @@ public class OrderDao extends GenericDao<Order> {
         Connection connection = DbConnection.getConnection();
         Statement statement = null;
         try {
+            connection.setAutoCommit(false);
             statement = connection.createStatement();
 
-            SqlBuilder sqlBuilder = new InsertBuilder().insertInto("orders",
+            SqlBuilder sqlBuilder1 = new InsertBuilder().insertInto("orders",
                     "customer_id, checkout_date, order_status")
-                    .values(order.getCustomerID() + ", \"" + order.getCheckoutDate().format(DATE_TME_FORMATTER).toString() + "\", \""
+                    .values(order.getCustomerID() + ", \"" + order.getCheckoutDate().format(DATE_TME_FORMATTER) + "\", \""
                             + order.getOrderStatus() + "\"");
-            statement.executeUpdate(sqlBuilder.build());
+            statement.executeUpdate(sqlBuilder1.build());
+            for (Item item : order.getItems().keySet()) {
+                SqlBuilder sqlBuilder2 = new InsertBuilder().insertInto("shopping_bag", "order_id, product_id, amount")
+                        .values(order.getId() + ", " + item.getId() + ", " + order.getItems().get(item));
+                statement.executeUpdate(sqlBuilder2.build());
+                connection.commit();
+            }
         } catch (SQLException e) {
+            try {
+                connection.rollback();
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+            }
             e.printStackTrace();
         }
     }
@@ -80,7 +128,7 @@ public class OrderDao extends GenericDao<Order> {
             statement = connection.createStatement();
             SqlBuilder sqlBuilder = new UpdateBuilder().update("orders")
                     .set("closed_date=\"" + order.getClosedDate().format(DATE_TME_FORMATTER).toString() + "\"," +
-                            " order_status=\"" + order.getOrderStatus() +"\"")
+                            " order_status=\"" + order.getOrderStatus() + "\"")
                     .where("id=" + order.getId());
             statement.executeUpdate(sqlBuilder.build());
         } catch (SQLException e) {
@@ -93,10 +141,19 @@ public class OrderDao extends GenericDao<Order> {
         Connection connection = DbConnection.getConnection();
         Statement statement = null;
         try {
+            connection.setAutoCommit(false);
             statement = connection.createStatement();
+            SqlBuilder sqlBuilder2 = new DeleteBuilder().delete("shopping_bag").where("order_id=" + order.getId());
+            statement.executeUpdate(sqlBuilder2.build());
             SqlBuilder sqlBuilder = new DeleteBuilder().delete("orders").where("id=" + order.getId());
             statement.executeUpdate(sqlBuilder.build());
+            connection.commit();
         } catch (SQLException e) {
+            try {
+                connection.rollback();
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+            }
             e.printStackTrace();
         }
     }
@@ -108,15 +165,17 @@ public class OrderDao extends GenericDao<Order> {
             Statement statement = connection.createStatement();
             SqlBuilder builder = new SelectBuilder().select("*").from("orders").where("customer_id=" + customer.getId());
             ResultSet resultSet = statement.executeQuery(builder.build());
-            while (resultSet.next()) {
+            while (resultSet != null && resultSet.next()) {
                 resultList.add(new Order(resultSet.getInt("id"), resultSet.getInt("customer_id"),
                         resultSet.getTimestamp("checkout_date").toLocalDateTime(),
                         resultSet.getObject("closed_date") != null ? resultSet.getTimestamp("closed_date").toLocalDateTime() : null,
-                        resultSet.getString("order_status")));
+                        (resultSet.getObject("order_status") instanceof OrderStatus)
+                                ? (OrderStatus) resultSet.getObject("order_status") : null));
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
         return resultList;
     }
 
@@ -129,11 +188,12 @@ public class OrderDao extends GenericDao<Order> {
                     "orders.closed_date, orders.order_status").from("orders").join("shopping_bag")
                     .on("orders.id=shopping_bag.order_id").where("shopping_bag.product_id=" + item.getId());
             ResultSet resultSet = statement.executeQuery(builder.build());
-            while (resultSet.next()) {
+            while (resultSet != null && resultSet.next()) {
                 resultList.add(new Order(resultSet.getInt("id"), resultSet.getInt("customer_id"),
                         resultSet.getTimestamp("checkout_date").toLocalDateTime(),
                         resultSet.getObject("closed_date") != null ? resultSet.getTimestamp("closed_date").toLocalDateTime() : null,
-                        resultSet.getString("order_status")));
+                        (resultSet.getObject("order_status") instanceof OrderStatus)
+                                ? (OrderStatus) resultSet.getObject("order_status") : null));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -148,15 +208,16 @@ public class OrderDao extends GenericDao<Order> {
         try {
             statement = connection.createStatement();
             SqlBuilder sqlBuilder = new SelectBuilder().select("*").from("orders").where("checkout_date<\""
-                    + localDate.toString() +" 00:00:00\"");
+                    + localDate.toString() + " 00:00:00\"");
             ResultSet resultSet = statement.executeQuery(sqlBuilder.build());
-            while (resultSet.next()) {
+            while (resultSet != null && resultSet.next()) {
                 resultList.add(new Order(resultSet.getInt("id"), resultSet.getInt("customer_id"),
                         resultSet.getTimestamp("checkout_date").toLocalDateTime(),
                         resultSet.getObject("closed_date") != null ? resultSet.getTimestamp("closed_date").toLocalDateTime() : null,
-                        resultSet.getString("order_status")));
+                        (resultSet.getObject("order_status") instanceof OrderStatus)
+                                ? (OrderStatus) resultSet.getObject("order_status") : null));
             }
-            for (Order order: resultList) {
+            for (Order order : resultList) {
                 sqlBuilder = new DeleteBuilder().delete("shopping_bag").where("order_id=" + order.getId());
                 statement.executeUpdate(sqlBuilder.build());
                 delete(order);

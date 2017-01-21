@@ -91,4 +91,26 @@ public class CustomerDao extends GenericDao<Customer> {
             e.printStackTrace();
         }
     }
+
+
+    public Customer getByEmailAndPassword(String email, String password) {
+        Customer result = null;
+        Connection connection = DbConnection.getConnection();
+        try {
+            Statement statement = connection.createStatement();
+            SqlBuilder builder = new SelectBuilder().select("*").from("customers").where("email=\"" + email +"\" AND" +
+                    " password=\"" + password +"\"");
+            ResultSet resultSet = statement.executeQuery(builder.build());
+            if (resultSet != null && resultSet.next()) {
+                result = new Customer(resultSet.getInt("id"), resultSet.getString("first_name"),
+                        resultSet.getString("last_name"), resultSet.getString("email"),
+                        resultSet.getString("password"), resultSet.getString("phoneNumber"),
+                        resultSet.getString("addres"), resultSet.getString("role"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
 }

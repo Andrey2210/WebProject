@@ -71,7 +71,7 @@ public class ItemDao extends GenericDao<Item> {
             SqlBuilder sqlBuilder = new InsertBuilder().insertInto("products",
                     "name, description, price, remaining_product, image")
                     .values("\"" + item.getName() + "\", \"" + item.getDescription() + "\", " + item.getPrice()
-                            + ", " + item.getRemainingAmount() + ", " + item.getImage());
+                            + ", " + item.getRemainingAmount() + ", \"img/" + item.getImage() +"\"");
             statement.executeUpdate(sqlBuilder.build());
         } catch (SQLException e) {
             e.printStackTrace();

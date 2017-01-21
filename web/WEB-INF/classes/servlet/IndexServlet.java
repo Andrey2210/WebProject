@@ -1,3 +1,4 @@
+package servlet;
 
 import dao.CustomerDao;
 import dao.GenericDao;
@@ -6,6 +7,7 @@ import dao.OrderDao;
 import entity.Customer;
 import entity.Item;
 import entity.Order;
+import service.ItemsService;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -20,19 +22,15 @@ import java.util.List;
 /**
  * Created by Andrey on 11.01.2017.
  */
-@WebServlet(urlPatterns = "/test")
-public class TestServlet extends HttpServlet {
+@WebServlet(urlPatterns = "/andrey-shop")
+public class IndexServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("text/html; charset=UTF-8");
         resp.setCharacterEncoding("UTF-8");
-
-        ItemDao itemDao = new ItemDao();
-        List<Item> itemList = itemDao.getAll();
-        req.setAttribute("list", itemList);
-
-        getServletContext().getRequestDispatcher("/index.jsp").forward(req, resp);
+        req.getSession().setAttribute("list", ItemsService.getInstance().getAllItems());
+        getServletContext().getRequestDispatcher("/WEB-INF/jsp/index.jsp").forward(req, resp);
 
     }
 }

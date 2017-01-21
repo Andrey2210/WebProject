@@ -1,8 +1,8 @@
 package entity;
 
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 
 
 /**
@@ -14,27 +14,50 @@ public class Order implements Entity {
     private int customerID;
     private LocalDateTime checkoutDate;
     private LocalDateTime closedDate;
-    private String orderStatus;
+    private OrderStatus orderStatus;
+    private HashMap<Item, Integer> items;
 
-    public Order(int orderNumber, int customerID, LocalDateTime checkoutDate, LocalDateTime closedDate, String orderStatus) {
+    public Order(int orderNumber, int customerID, LocalDateTime checkoutDate, LocalDateTime closedDate, OrderStatus orderStatus) {
         this.orderNumber = orderNumber;
         this.customerID = customerID;
         this.checkoutDate = checkoutDate;
         this.closedDate = closedDate;
         this.orderStatus = orderStatus;
+        items = new HashMap<>();
     }
 
-    public Order(int orderNumber, int customerID, LocalDateTime checkoutDate, String orderStatus) {
+    public Order(int orderNumber, int customerID, LocalDateTime checkoutDate, OrderStatus orderStatus) {
         this.orderNumber = orderNumber;
         this.customerID = customerID;
         this.checkoutDate = checkoutDate;
         this.orderStatus = orderStatus;
+        items = new HashMap<>();
+    }
+
+    @Override
+    public int hashCode() {
+        int result = 17;
+        result = 31 * result + orderNumber;
+        result = 31 * result + customerID;
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj == null) {
+            return  false;
+        }
+        if(!(obj instanceof  Order)) {
+            return false;
+        }
+        Order otherorder = (Order) obj;
+        return orderNumber == otherorder.getId() && customerID == otherorder.getCustomerID();
     }
 
     @Override
     public String toString() {
         return getOrderNumber() + " " + getCustomerID() + " " + getCheckoutDate() + " " + getClosedDate()
-                + " " + getOrderStatus();
+                + " " + getOrderStatus() + getItems().toString();
     }
 
     public int getOrderNumber() {
@@ -69,16 +92,24 @@ public class Order implements Entity {
         this.closedDate = closedDate;
     }
 
-    public String getOrderStatus() {
+    public OrderStatus getOrderStatus() {
         return orderStatus;
     }
 
-    public void setOrderStatus(String orderStatus) {
+    public void setOrderStatus(OrderStatus orderStatus) {
         this.orderStatus = orderStatus;
     }
 
     @Override
     public int getId() {
         return orderNumber;
+    }
+
+    public HashMap<Item, Integer> getItems() {
+        return items;
+    }
+
+    public void setItems(HashMap<Item, Integer> items) {
+        items = items;
     }
 }

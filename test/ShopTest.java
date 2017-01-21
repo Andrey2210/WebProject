@@ -1,10 +1,7 @@
 import dao.*;
 import dao.sqlBuilder.DeleteBuilder;
 import dao.sqlBuilder.SqlBuilder;
-import entity.Customer;
-import entity.Entity;
-import entity.Item;
-import entity.Order;
+import entity.*;
 import org.junit.Test;
 
 import java.sql.SQLException;
@@ -65,31 +62,33 @@ public class ShopTest {
     @Test
     public void TestGetOrderById() throws SQLException, ClassNotFoundException {
         GenericDao orderDao = new OrderDao();
-        Entity entity = orderDao.getById(3);
+        Entity entity = orderDao.getById(2);
         System.out.println(((Order) entity).toString());
     }
 
     @Test
     public void TestInsertOrder() throws SQLException, ClassNotFoundException {
-        GenericDao orderDao = new OrderDao();
-        Order order = (Order) orderDao.getById(3);
-        DateTimeFormatter DATE_TME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-       orderDao.insert(order);
+        OrderDao orderDao = new OrderDao();
+        Order order = (Order) orderDao.getById(4);
+        GenericDao itemDao = new ItemDao();
+        Entity entity = itemDao.getById(8);
+        order.getItems().put((Item)entity, 2);
+        orderDao.insert(order);
     }
 
     @Test
     public void TestUpdateOrder() throws SQLException, ClassNotFoundException {
         GenericDao orderDao = new OrderDao();
-        Order order = (Order) orderDao.getById(5);
+        Order order = (Order) orderDao.getById(6);
         order.setClosedDate(LocalDateTime.now());
-        order.setOrderStatus("finished");
+        order.setOrderStatus(OrderStatus.FINISHED);
         orderDao.update(order);
     }
 
     @Test
     public void TestDeleteOrder() throws SQLException, ClassNotFoundException {
         GenericDao orderDao = new OrderDao();
-        Order order = (Order) orderDao.getById(5);
+        Order order = (Order) orderDao.getById(2);
         orderDao.delete(order);
     }
 
