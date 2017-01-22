@@ -103,27 +103,27 @@
     <form action="/dashboard" role="form" method="post">
         <div class="form-group">
             <label>Название товара</label>
-            <input name="itemName" class="form-control" size="">
+            <input type="text" name="itemName" class="form-control" size="">
         </div>
 
         <div class="form-group">
             <label>Описание товара</label>
-            <textarea name="itemDescription" class="form-control" rows="3"></textarea>
+            <textarea type="text" name="itemDescription" class="form-control" rows="3"></textarea>
         </div>
 
         <div class="form-group">
             <label>Цена</label>
-            <input name="itemPrice" class="form-control">
+            <input type="number" name="itemPrice" class="form-control">
         </div>
 
         <div class="form-group">
             <label>Количество</label>
-            <input name="itemAmount" class="form-control">
+            <input type="number" name="itemAmount" class="form-control">
         </div>
 
         <div class="form-group">
             <label>Вставить картинку</label>
-            <input name="itemImage" type="file">
+            <input name="itemImage" type="file" accept="image/*">
         </div>
 
         <button type="submit" class="btn btn-default">Подтвердить</button>

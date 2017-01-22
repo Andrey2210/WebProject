@@ -8,8 +8,8 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8" %>
 <%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
-<fmt:setLocale value="${param.language}" />
-<fmt:setBundle basename="translations" />
+<fmt:setLocale value="${param.language}"/>
+<fmt:setBundle basename="translations"/>
 <html>
 <head>
     <meta charset="utf-8">
@@ -29,31 +29,41 @@
                 <div class="row">
                     <div class="col-xs-6 col-sm-6 col-md-6">
                         <div class="form-group">
-                            <input type="text" name="firstName" id="firstName" class="form-control input-lg" placeholder="Имя" tabindex="1">
+                            <input type="text" name="firstName" id="firstName" class="form-control input-lg"
+                                   placeholder="Имя" tabindex="1" required>
                         </div>
                     </div>
                     <div class="col-xs-6 col-sm-6 col-md-6">
                         <div class="form-group">
-                            <input type="text" name="lastName" id="lastName" class="form-control input-lg" placeholder="Фамилия" tabindex="2">
+                            <input type="text" name="lastName" id="lastName" class="form-control input-lg"
+                                   placeholder="Фамилия" tabindex="2" required>
                         </div>
                     </div>
                 </div>
                 <div class="form-group">
-                    <input type="email" name="email" id="email" class="form-control input-lg" placeholder="Email Address" tabindex="3">
+                    <input type="email" name="email" id="email" class="form-control input-lg"
+                           placeholder="Email Address" tabindex="3" required>
                 </div>
                 <div class="form-group">
-                    <input type="password" name="password" id="password" class="form-control input-lg" placeholder="Password" tabindex="4">
+                    <input type="password" name="password" id="password" class="form-control input-lg"
+                           placeholder="Password" tabindex="4" required>
                 </div>
                 <div class="form-group">
-                    <input type="phone" name="phoneNumber" id="phoneNumber" class="form-control input-lg" placeholder="Phone Number" tabindex="3">
+                    <input type="tel" pattern="\+375\([0-9]{2}\)[0-9]{3}-[0-9]{2}-[0-9]{2}" name="phoneNumber"
+                           id="phoneNumber" class="form-control input-lg"
+                           placeholder="Phone Number: +375(**)***-**-**" tabindex="5"
+                    >
                 </div>
                 <div class="form-group">
-                    <input type="address" name="address" id="address" class="form-control input-lg" placeholder="Address" tabindex="3">
+                    <input type="text" name="address" id="address" class="form-control input-lg" placeholder="Address"
+                           tabindex="6" required>
                 </div>
 
                 <hr class="colorgraph">
                 <div class="row">
-                    <div class="col-xs-12 col-md-12"><button type="submit" class="btn btn-success btn-block btn-lg">Зарегистрироваться</button></div>
+                    <div class="col-xs-12 col-md-12">
+                        <button type="submit" class="btn btn-success btn-block btn-lg">Зарегистрироваться</button>
+                    </div>
                 </div>
             </form>
         </div>
