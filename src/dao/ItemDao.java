@@ -1,19 +1,13 @@
 package dao;
 
 import connection.DbConnection;
-import dao.sqlBuilder.DeleteBuilder;
-import dao.sqlBuilder.InsertBuilder;
-import dao.sqlBuilder.SqlBuilder;
-import dao.sqlBuilder.UpdateBuilder;
+import dao.sqlBuilder.*;
 import entity.Entity;
 import entity.Item;
 import sun.text.normalizer.UTF16;
 
 import java.io.UnsupportedEncodingException;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -51,19 +45,21 @@ public class ItemDao extends GenericDao<Item> {
         try {
             if (resultSet != null && resultSet.next()) {
                 String description = new String(resultSet.getBlob("description").getBytes(1l,
-                        (int)  resultSet.getBlob("description").length()));
+                        (int) resultSet.getBlob("description").length()), "UTF-8");
                 result = new Item(resultSet.getInt("id"), resultSet.getString("name"),
                         description, resultSet.getDouble("price"), resultSet.getInt("remaining_product"),
                         resultSet.getString("image") != null ? resultSet.getString("image") : null);
             }
         } catch (SQLException e) {
             e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
         }
         return result;
     }
 
     @Override
-    public void insert(Item item) {
+    public boolean insert(Item item) {
         Connection connection = DbConnection.getConnection();
         Statement statement = null;
         try {
@@ -75,7 +71,9 @@ public class ItemDao extends GenericDao<Item> {
             statement.executeUpdate(sqlBuilder.build());
         } catch (SQLException e) {
             e.printStackTrace();
+            return  false;
         }
+        return  true;
     }
 
     @Override
@@ -93,6 +91,7 @@ public class ItemDao extends GenericDao<Item> {
         }
     }
 
+
     @Override
     public void delete(Item item) {
         Connection connection = DbConnection.getConnection();
@@ -104,5 +103,51 @@ public class ItemDao extends GenericDao<Item> {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public List<Item> getAllOrderBy(String order) {
+        List<Item> resultList = new LinkedList<>();
+        Connection connection = DbConnection.getConnection();
+        Statement statement = null;
+        try {
+            statement = connection.createStatement();
+            SqlBuilder sqlBuilder = new SelectBuilder().select("*").from(TABLE_NAME).orderBy(order);
+            ResultSet resultSet = statement.executeQuery(sqlBuilder.build());
+            while (resultSet != null && resultSet.next()) {
+                String description = new String(resultSet.getBlob("description").getBytes(1l,
+                        (int) resultSet.getBlob("description").length()), "UTF-8");
+                resultList.add(new Item(resultSet.getInt("id"), resultSet.getString("name"),
+                        description, resultSet.getDouble("price"), resultSet.getInt("remaining_product"),
+                        resultSet.getString("image") != null ? resultSet.getString("image") : null));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return resultList;
+    }
+
+    public List<Item> searchItems(String like) {
+        List<Item> resultList = new LinkedList<>();
+        Connection connection = DbConnection.getConnection();
+            PreparedStatement statement = null;
+            try {
+                statement = connection.prepareStatement("SELECT * FROM products WHERE name LIKE ?;");
+                statement.setString(1, "%" + like + "%");
+                ResultSet resultSet = statement.executeQuery();
+            while (resultSet != null && resultSet.next()) {
+                String description = new String(resultSet.getBlob("description").getBytes(1l,
+                        (int) resultSet.getBlob("description").length()), "UTF-8");
+                resultList.add(new Item(resultSet.getInt("id"), resultSet.getString("name"),
+                        description, resultSet.getDouble("price"), resultSet.getInt("remaining_product"),
+                        resultSet.getString("image") != null ? resultSet.getString("image") : null));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return resultList;
     }
 }

@@ -20,15 +20,21 @@ import java.util.List;
 public abstract class GenericDao<T extends Entity> {
 
     public abstract List<T> getAll();
+
     public abstract T getById(int id);
-    public abstract void insert(T entity);
+
+    public abstract boolean insert(T entity);
+
     public abstract void update(T entity);
+
     public abstract void delete(T entity);
 
     protected ResultSet getAllResults(String tableName) {
-        Connection connection = DbConnection.getConnection();
+        Connection connection = null;
+        Statement statement = null;
         try {
-            Statement statement = connection.createStatement();
+            connection = DbConnection.getConnection();
+            statement = connection.createStatement();
             SqlBuilder sqlBuilder = new SelectBuilder().select("*").from(tableName);
             return statement.executeQuery(sqlBuilder.build());
         } catch (SQLException e) {
@@ -38,9 +44,11 @@ public abstract class GenericDao<T extends Entity> {
     }
 
     protected ResultSet getResultsById(String tableName, int id) {
-        Connection connection = DbConnection.getConnection();
+        Connection connection = null;
+        Statement statement = null;
         try {
-            Statement statement = connection.createStatement();
+            connection = DbConnection.getConnection();
+            statement = connection.createStatement();
             SqlBuilder sqlBuilder = new SelectBuilder().select("*").from(tableName).where("id=" + id);
             return statement.executeQuery(sqlBuilder.build());
         } catch (SQLException e) {
@@ -48,4 +56,5 @@ public abstract class GenericDao<T extends Entity> {
         }
         return null;
     }
+
 }

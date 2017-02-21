@@ -67,7 +67,7 @@ public class SelectBuilder implements SqlBuilder {
         result += where == null ? "" : " WHERE " + where;
         result += groupBy == null ? "" : " GROUP BY " + groupBy;
         result += having == null ? "" : " HAVING " + having;
-        result += orderBy == null ? "" : " ORDER BY " + orderBy;
+        result += orderBy == null ? "" : " ORDER BY " + orderBy ;
         result += limit == 0 ? ";" : +limit + ";";
         return result;
     }

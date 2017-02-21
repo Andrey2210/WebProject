@@ -93,14 +93,7 @@ public class ShopTest {
     }
 
 
-    @Test
-    public void TestGetCustomersOrders() throws SQLException, ClassNotFoundException {
-        GenericDao orderDao = new OrderDao();
-        GenericDao customerDao = new CustomerDao();
-        Customer customer = (Customer) customerDao.getById(1);
-        customer.setOrderList(((OrderDao) orderDao).getCustomersOrders(customer));
-        customer.getOrderList().forEach(x -> System.out.println(x.toString()));
-    }
+
 
     @Test
     public void TestGetOrdersWithItem() throws SQLException, ClassNotFoundException {

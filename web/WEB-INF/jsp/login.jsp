@@ -8,7 +8,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
-<fmt:setLocale value="${param.language}" />
+<fmt:setLocale value="${sessionScope.language}" />
 <fmt:setBundle basename="translations" />
 <html>
 <head>
@@ -19,18 +19,19 @@
     <title>Login</title>
 </head>
 <body>
-<div class="container">
+<jsp:include page="navbar.jsp"/>
+<div class="container" style="padding: 70px ">
+    <h1 class="text-center" style="text-shadow: 2px 4px 3px rgba(0,0,0,0.3);">Andrey Shop</h1>
     <form action="/login" class="form-signin" role="form" method="post">
         <input type="hidden" name="command" value="login" />
-        <h2 class="form-signin-heading">Вход</h2>
         <div class="form-group">
             <input type="email" name="email" class="form-control" placeholder="Email" required="" autofocus="">
         </div>
         <div class="form-group">
-            <input type="password" name="password" class="form-control" placeholder="Пароль" required="">
+            <input type="password" name="password" class="form-control" placeholder="<fmt:message key="navbar.password"/>" required="">
         </div>
 
-        <button class="btn btn-lg btn-primary btn-block" type="submit">Войти</button>
+        <button class="btn btn-lg btn-primary btn-block" type="submit"><fmt:message key="navbar.login"/></button>
     </form>
 
 </div>
@@ -42,14 +43,18 @@
     <!-- Footer -->
     <footer>
         <div class="row">
-            <div class="col-lg-12">
+            <div class="col-lg-11">
                 <p>Copyright &copy; Andrey Shop 2017</p>
             </div>
+            <div class="col-lg-1">
+                <p><a class="btn btn-lin" href="/download"><fmt:message key="footer.report"/>
+                    <span class="glyphicon glyphicon-file"></span></a></p>
+            </div>
+
         </div>
     </footer>
 
 </div>
-<!-- /.container -->
 
 
 <script src="../../js/jquery.js"></script>

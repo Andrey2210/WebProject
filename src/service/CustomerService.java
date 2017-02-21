@@ -28,7 +28,7 @@ public class CustomerService {
     public List<Customer> getAllCustomers() {
         List<Customer> customerList = new CustomerDao().getAll();
         for(Customer customer : customerList) {
-            customer.setOrderList(new OrderDao().getCustomersOrders(customer));
+            customer.setOrderList(new OrderDao().getAll(customer));
         }
         return customerList;
     }

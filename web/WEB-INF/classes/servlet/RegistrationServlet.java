@@ -1,5 +1,6 @@
 package servlet;
 
+import dto.CustomerAuthenticationDto;
 import entity.Customer;
 import service.CustomerService;
 
@@ -30,11 +31,15 @@ public class RegistrationServlet extends HttpServlet {
                 || req.getParameter("phoneNumber").isEmpty() ||  req.getParameter("address").isEmpty()) {
             getServletContext().getRequestDispatcher("/WEB-INF/jsp/registration.jsp").forward(req, resp);
         } else {
-            Customer customer = new Customer(req.getParameter("firstName"), req.getParameter("lastName"),
+            CustomerService.getInstance().insertCustomer(new Customer(req.getParameter("firstName"), req.getParameter("lastName"),
                     req.getParameter("email"), req.getParameter("password"), req.getParameter("phoneNumber"),
-                    req.getParameter("address"));
-            CustomerService.getInstance().insertCustomer(customer);
-            getServletContext().getRequestDispatcher("/WEB-INF/jsp/index.jsp").forward(req, resp);
+                    req.getParameter("address")));
+            CustomerAuthenticationDto customerAuthenticationDto = new CustomerAuthenticationDto();
+            customerAuthenticationDto.setName(req.getParameter("email"));
+            customerAuthenticationDto.setPassword(req.getParameter("password"));
+            customerAuthenticationDto.setRole("user");
+            req.getSession().setAttribute("userData", customerAuthenticationDto);
+            resp.sendRedirect("/andrey-shop");
         }
     }
 }

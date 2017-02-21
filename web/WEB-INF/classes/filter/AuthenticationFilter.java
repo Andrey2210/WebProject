@@ -21,14 +21,20 @@ public class AuthenticationFilter implements Filter {
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest request = ((HttpServletRequest) servletRequest);
-        if(request.getRequestURI().contains("/dashboard")) {
-            Object userData = request.getSession().getAttribute("userData");
+        Object userData = request.getSession().getAttribute("userData");
+        if(request.getRequestURI().contains("/shoppingBag")) {
             if (userData == null) {
                 servletRequest.getRequestDispatcher("/WEB-INF/jsp/login.jsp")
                         .forward(servletRequest, servletResponse);
             }
-            else if(((CustomerAuthenticationDto)userData).getRole().equals("user")) {
-                ((HttpServletResponse) servletResponse).sendRedirect("/andrey-shop");
+        } else {
+            if (request.getRequestURI().contains("/dashboard")) {
+                if (userData == null) {
+                    servletRequest.getRequestDispatcher("/WEB-INF/jsp/login.jsp")
+                            .forward(servletRequest, servletResponse);
+                } else if (((CustomerAuthenticationDto) userData).getRole().equals("user")) {
+                    ((HttpServletResponse) servletResponse).sendRedirect("/andrey-shop");
+                }
             }
         }
         filterChain.doFilter(servletRequest, servletResponse);

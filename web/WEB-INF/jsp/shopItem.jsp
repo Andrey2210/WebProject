@@ -9,7 +9,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"  %>
 <%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
-<fmt:setLocale value="${param.language}" />
+<fmt:setLocale value="${sessionScope.language}" />
 <fmt:setBundle basename="translations" />
 <html>
 <head>
@@ -52,14 +52,18 @@
     <!-- Footer -->
     <footer>
         <div class="row">
-            <div class="col-lg-12">
+            <div class="col-lg-11">
                 <p>Copyright &copy; Andrey Shop 2017</p>
             </div>
+            <div class="col-lg-1">
+                <p><a class="btn btn-lin" href="/download"><fmt:message key="footer.report"/>
+                    <span class="glyphicon glyphicon-file"></span></a></p>
+            </div>
+
         </div>
     </footer>
 
 </div>
-<!-- /.container -->
 
 
 <script src="../../js/jquery.js"></script>

@@ -27,9 +27,33 @@ public class IndexServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        resp.setContentType("text/html; charset=UTF-8");
-        resp.setCharacterEncoding("UTF-8");
-        req.getSession().setAttribute("list", ItemsService.getInstance().getAllItems());
+        String order = req.getParameter("order");
+        if(order != null) {
+            switch (order) {
+                case "name":
+                    req.setAttribute("list", ItemsService.getInstance().getAllItemsOrderBy(order));
+                    break;
+                case "price":
+                    req.setAttribute("list", ItemsService.getInstance().getAllItemsOrderBy(order));
+                    break;
+                default:
+                    req.setAttribute("list", ItemsService.getInstance().getAllItems());
+            }
+        } else {
+                req.setAttribute("list", ItemsService.getInstance().getAllItems());
+        }
+        getServletContext().getRequestDispatcher("/WEB-INF/jsp/index.jsp").forward(req, resp);
+
+    }
+
+@Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String like = req.getParameter("like");
+        if(like != null) {
+           req.setAttribute("list", ItemsService.getInstance().searchItems(like));
+        } else {
+            req.setAttribute("list", ItemsService.getInstance().getAllItems());
+        }
         getServletContext().getRequestDispatcher("/WEB-INF/jsp/index.jsp").forward(req, resp);
 
     }

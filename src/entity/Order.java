@@ -15,7 +15,7 @@ public class Order implements Entity {
     private LocalDateTime checkoutDate;
     private LocalDateTime closedDate;
     private OrderStatus orderStatus;
-    private HashMap<Item, Integer> items;
+    private HashMap<Item, Integer> items = new HashMap<>();
 
     public Order(int orderNumber, int customerID, LocalDateTime checkoutDate, LocalDateTime closedDate, OrderStatus orderStatus) {
         this.orderNumber = orderNumber;
@@ -23,7 +23,6 @@ public class Order implements Entity {
         this.checkoutDate = checkoutDate;
         this.closedDate = closedDate;
         this.orderStatus = orderStatus;
-        items = new HashMap<>();
     }
 
     public Order(int orderNumber, int customerID, LocalDateTime checkoutDate, OrderStatus orderStatus) {
@@ -31,7 +30,12 @@ public class Order implements Entity {
         this.customerID = customerID;
         this.checkoutDate = checkoutDate;
         this.orderStatus = orderStatus;
-        items = new HashMap<>();
+    }
+
+    public Order(int customerID, LocalDateTime checkoutDate, OrderStatus orderStatus) {
+        this.customerID = customerID;
+        this.checkoutDate = checkoutDate;
+        this.orderStatus = orderStatus;
     }
 
     @Override
@@ -110,6 +114,10 @@ public class Order implements Entity {
     }
 
     public void setItems(HashMap<Item, Integer> items) {
-        items = items;
+        this.items = items;
+    }
+
+    public void addItem(Item item, int amount) {
+        items.put(item, amount);
     }
 }

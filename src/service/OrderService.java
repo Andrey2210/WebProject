@@ -1,8 +1,13 @@
 package service;
 
+import dao.ItemDao;
 import dao.OrderDao;
+import entity.Item;
 import entity.Order;
+import entity.OrderStatus;
 
+import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -26,5 +31,19 @@ public class OrderService {
 
     public List<Order> getAllOrders() {
         return new OrderDao().getAll();
+    }
+
+
+    public boolean createOrder(HashMap<Item, Integer> itemMap, int customerId) {
+        OrderDao orderDao = new OrderDao();
+        Order order = new Order(customerId, LocalDateTime.now(), OrderStatus.IN_PROCESS);
+        order.setItems(itemMap);
+        return orderDao.insert(order);
+    }
+
+    public void updateOrder(int orderId) {
+        OrderDao orderDao = new OrderDao();
+        Order order = orderDao.getById(orderId);
+        orderDao.update(order);
     }
 }

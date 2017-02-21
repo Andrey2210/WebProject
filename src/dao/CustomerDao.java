@@ -48,7 +48,7 @@ public class CustomerDao extends GenericDao<Customer> {
     }
 
     @Override
-    public void insert(Customer customer) {
+    public boolean insert(Customer customer) {
         Connection connection = DbConnection.getConnection();
         Statement statement = null;
         try {
@@ -61,7 +61,9 @@ public class CustomerDao extends GenericDao<Customer> {
             statement.executeUpdate(sqlBuilder.build());
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
+        return true;
     }
 
     @Override

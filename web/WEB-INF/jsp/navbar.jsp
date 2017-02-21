@@ -2,7 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
-<fmt:setLocale value="${param.language}"/>
+<fmt:setLocale value="${sessionScope.language}"/>
 <fmt:setBundle basename="translations"/>
 <html>
 <head>
@@ -35,9 +35,10 @@
 
             <ul class="nav navbar-nav navbar-right">
                 <li>
-                    <button type="button" class="btn btn-default navbar-btn">
-                        <span class="glyphicon glyphicon-shopping-cart"></span>
-                        <fmt:message key="navbar.shoppingBag"/>
+                    <a href="/shoppingBag"><span class="glyphicon glyphicon-shopping-cart"></span><fmt:message
+                            key="navbar.shoppingBag"/></a>
+
+
                     </button>
                 </li>
                 <c:choose>
@@ -48,12 +49,14 @@
                             <ul class="dropdown-menu">
                                 <form action="/login" style="max-width: 120px; margin-left: 20px" role="form"
                                       method="post">
+                                    <li><a href="/registration"><fmt:message key="registration.signUp"/>
+                                    </a></li>
                                     <input type="hidden" name="command" value="login"/>
-                                    <li></li>
+                                    <li class="divider"></li>
                                     <li>
                                         <div class="form-group">
                                             <input type="email" name="email" class="form-control" placeholder="Email"
-                                                   required="" autofocus="">
+                                                   required="">
                                         </div>
                                     </li>
 
@@ -77,7 +80,7 @@
                         <li>
                             <form action="/login" method="post">
                                 <input type="hidden" name="command" value="logout"/>
-                                <button type="submit" class="btn btn-default navbar-btn">
+                                <button type="submit" class="btn btn-link navbar-btn">
                                     <fmt:message key="navbar.logout"/>
                                 </button>
                             </form>
@@ -86,14 +89,11 @@
                 </c:choose>
                 <li>
                     <form>
-                    <div class="navbar-header">
-
-                            <input type="submit" style="border: 0px; margin-left: 10px; margin-top: 20px" src="/img/flag.png"
-                                   class="flag flag-us" name="language" value="en_US">
-                            <input type="submit" style="border: 0px; margin-top: 20px" src="/img/flag.png"
-                                   class="flag flag-ru" name="language" value="ru_RU">
-
-                    </div>
+                        <input type="submit" style="border: 0px; margin-left: 10px; margin-top: 20px"
+                               src="/img/flag.png"
+                               class="flag flag-us" name="language" value="en_US">
+                        <input type="submit" style="border: 0px; margin-top: 20px" src="/img/flag.png"
+                               class="flag flag-ru" name="language" value="ru_RU">
                     </form>
                 </li>
             </ul>
