@@ -11,8 +11,10 @@ import java.io.IOException;
 /**
  * Created by Andrey on 21.01.2017.
  */
-@WebFilter("/*")
+@WebFilter(value = "/*")
 public class AuthenticationFilter implements Filter {
+
+
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
 
